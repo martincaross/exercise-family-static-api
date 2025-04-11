@@ -24,11 +24,12 @@ def sitemap():
 @app.route('/members', methods=['GET'])
 def handle_hello():
     members = jackson_family.get_all_members()
-    return jsonify(members), 200
+    response_body = {"family": members}
+    return jsonify(response_body), 200
 
-@app.route('/members/<int:id>', methods=['GET'])
-def get_member(id):
-    member = jackson_family.get_member(id)
+@app.route('/members/<int:member_id>', methods=['GET'])
+def handle_hello1(member_id):
+    member = jackson_family.get_member(member_id)
     if member is None:
         return jsonify({"error": "Member not found"}), 404
     return jsonify(member), 200
@@ -45,14 +46,16 @@ def handle_hello2():
         return jsonify({"error": "Missing 'first_name' or 'age'"}), 400
 
     jackson_family.add_member(member)
-    return jsonify(member), 200
+    return jsonify({"msg": "Member added successfully"}), 200
 
-@app.route('/members/<int:id>', methods=['DELETE'])
-def handle_hello3(id):
-    updated_members = jackson_family.delete_member(id)
+#Tengo que hacer bien el test (creo que tengo que cambiar algunas funciones de nombre)
+
+@app.route('/members/<int:member_id>', methods=['DELETE'])
+def handle_hello3(member_id):
+    updated_members = jackson_family.delete_member(member_id)
     if updated_members is None:
         return jsonify({"error": "Member not found"}), 400
-    return jsonify({"done": True}), 200
+    return jsonify({"msg": "Member deleted successfully", "family": updated_members}), 200
 
 if __name__ == '__main__':
     PORT = int(os.environ.get('PORT', 3000))
